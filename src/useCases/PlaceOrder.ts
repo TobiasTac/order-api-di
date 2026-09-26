@@ -1,5 +1,5 @@
-import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses';
 import { Order } from '../entities/Order';
+import { SESGateway } from '../gateways/SESGateway';
 import { SQSGateway } from '../gateways/SQSGateway';
 import { DynamoOrdersRepository } from '../repository/DynamoOrdersRepository';
 
@@ -11,37 +11,21 @@ export class PlaceOrder {
     const order = new Order(customerEmail, amount);
     const dynamoOrdersRepository = new DynamoOrdersRepository();
     const sqsGateway = new SQSGateway();
+    const sesGateway = new SESGateway();
 
 
     await dynamoOrdersRepository.create(order);
     await sqsGateway.publishMessage({ orderId: order.id });
-
-    const sesClient = new SESClient({ region: 'sa-east-1' });
-    const sendEmailCommand = new SendEmailCommand({
-      Source: 'TACStore <noreply@tobiasac.dev.br>',
-      Destination: {
-        ToAddresses: [customerEmail],
-      },
-      Message: {
-        Subject: {
-          Charset: 'utf-8',
-          Data: `Pedido ${order.id} confirmado!`,
-        },
-        Body: {
-          Html: {
-            Charset: 'utf-8',
-            Data: `
+    await sesGateway.sendEmail({
+      from: 'TACStore <noreply@tobiasac.dev.br>',
+      to: [customerEmail],
+      subject: `Pedido ${order.id} confirmado!`,
+      html: `
               <h1> E aí, Tobias!</h1>
-
               <p> Passando aqui só pra avisa que o seu pedido já foi confirmado e em breve você receverá a confirmação do pagamento e a nota fiscal aqui no seu e-mail!</p>
-
               <small> {{ tabela com os itens do pedido }} </small>
-            `
-          },
-        }
-      }
+      `,
     });
-    await sesClient.send(sendEmailCommand);
 
     return { orderId: order.id };
   }
