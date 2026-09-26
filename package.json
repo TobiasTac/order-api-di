@@ -1,0 +1,25 @@
+{
+  "name": "live-059-inversion-of-control",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tsc:watch": "tsc --watch",
+    "start": "node --watch dist/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.2",
+    "eslint": "^8.57.1",
+    "globals": "^17.12.0",
+    "typescript": "^7.0.2",
+    "typescript-eslint": "^8.70.1"
+  },
+  "dependencies": {
+    "fastify": "^5.12.5"
+  }
+}
