@@ -1,6 +1,6 @@
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses';
-import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 import { Order } from '../entities/Order';
+import { SQSGateway } from '../gateways/SQSGateway';
 import { DynamoOrdersRepository } from '../repository/DynamoOrdersRepository';
 
 export class PlaceOrder {
@@ -10,16 +10,11 @@ export class PlaceOrder {
 
     const order = new Order(customerEmail, amount);
     const dynamoOrdersRepository = new DynamoOrdersRepository();
+    const sqsGateway = new SQSGateway();
 
 
     await dynamoOrdersRepository.create(order);
-
-    const sqsClient = new SQSClient();
-    const sendMessageCommand = new SendMessageCommand({
-      QueueUrl: 'https://sqs.us-east-1.amazonaws.com/564111475414/ProcessPaymentQueue',
-      MessageBody: JSON.stringify({ orderId: order.id }),
-    });
-    await sqsClient.send(sendMessageCommand);
+    await sqsGateway.publishMessage({ orderId: order.id });
 
     const sesClient = new SESClient({ region: 'sa-east-1' });
     const sendEmailCommand = new SendEmailCommand({
