@@ -1,6 +1,8 @@
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
 
-export class SQSGateway {
+import type { IQueueGateway } from '../interfaces/gateways/IQueueGateway';
+
+export class SQSGateway implements IQueueGateway {
   private client = new SQSClient();
 
   async publishMessage(message: Record<string, unknown>): Promise<void> {
