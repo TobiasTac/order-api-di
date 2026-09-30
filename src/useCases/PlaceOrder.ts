@@ -4,19 +4,20 @@ import { SQSGateway } from '../gateways/SQSGateway';
 import { DynamoOrdersRepository } from '../repository/DynamoOrdersRepository';
 
 export class PlaceOrder {
+  constructor(
+    private readonly dynamoOrdersRepository: DynamoOrdersRepository,
+    private readonly sqsGateway: SQSGateway,
+    private readonly sesGateway:SESGateway,
+  ) {}
   async execute() {
     const customerEmail = 'tobias.vida@live.com';
     const amount = Math.ceil(Math.random() * 1000);
 
     const order = new Order(customerEmail, amount);
-    const dynamoOrdersRepository = new DynamoOrdersRepository();
-    const sqsGateway = new SQSGateway();
-    const sesGateway = new SESGateway();
 
-
-    await dynamoOrdersRepository.create(order);
-    await sqsGateway.publishMessage({ orderId: order.id });
-    await sesGateway.sendEmail({
+    await this.dynamoOrdersRepository.create(order);
+    await this.sqsGateway.publishMessage({ orderId: order.id });
+    await this.sesGateway.sendEmail({
       from: 'TACStore <noreply@tobiasac.dev.br>',
       to: [customerEmail],
       subject: `Pedido ${order.id} confirmado!`,
