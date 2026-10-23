@@ -28,5 +28,14 @@ export class Registry {
 
   }
 
-  resolve() { }
+  resolve<T>(implementation: Constructor<T>): T {
+    const token = implementation.name;
+    const impl = this.services.get(token);
+
+    if (!impl) {
+      throw new Error(`"${token}" was not found in the registry.`);
+    }
+
+    return new impl();
+  }
 }
