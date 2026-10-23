@@ -1,9 +1,7 @@
-
-type Constructor<T> = new (...args: any[]) => T;
+import { Constructor } from '../types/utils';
 
 export class Registry {
   private static instance: Registry;
-
 
   static getInstance() {
     if (!this.instance) {

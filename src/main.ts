@@ -1,11 +1,13 @@
 import fastify from 'fastify';
-import { container } from './di/container';
+import { Registry } from './di/Registry';
 import { SESGateway } from './gateways/SESGateway';
 import { SQSGateway } from './gateways/SQSGateway';
 import { DynamoOrdersRepository } from './repository/DynamoOrdersRepository';
 import { PlaceOrder } from './useCases/PlaceOrder';
 
 const app = fastify();
+
+const container = Registry.getInstance();
 
 console.log(container);
 
