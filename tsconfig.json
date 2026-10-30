@@ -9,6 +9,7 @@
     "module": "nodenext",
     "target": "esnext",
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "types": [],
     // For nodejs:
     // "lib": ["esnext"],

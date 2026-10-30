@@ -1,9 +1,7 @@
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses';
 
-import { Injectable } from '../di/injectable';
 import type { IEmailGateway, ISendEmailParams } from '../interfaces/gateways/IEmailGateway';
 
-@Injectable()
 export class SESGateway implements IEmailGateway {
   private client = new SESClient({ region: 'sa-east-1' });
 

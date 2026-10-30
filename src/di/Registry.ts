@@ -15,25 +15,27 @@ export class Registry {
 
   private constructor() { }
 
-  register<T>(implementation: Constructor<T>) {
-    const token = implementation.name;
-
+  register<T>(token: string, implementation: Constructor<T>) {
     if (this.services.has(token)) {
       throw new Error(`"${token}" is already registered`);
     }
 
-    this.services.set(implementation.name, implementation);
-
+    this.services.set(token, implementation);
   }
 
-  resolve<T>(implementation: Constructor<T>): T {
-    const token = implementation.name;
-    const impl = this.services.get(token);
+  resolve<T>(token: string): T {
+    const implementation = this.services.get(token);
 
-    if (!impl) {
+    if (!implementation) {
       throw new Error(`"${token}" was not found in the registry.`);
     }
 
-    return new impl();
+    const paramTypes: any[] = Reflect.getMetadata('design:paramtypes', implementation) ?? [];
+    const dependencies = paramTypes.map((_, index) => {
+      const dependencyToken = Reflect.getMetadata(`inject:${index}`, implementation);
+      return this.resolve(dependencyToken);
+    });
+
+    return new implementation(...dependencies);
   }
 }

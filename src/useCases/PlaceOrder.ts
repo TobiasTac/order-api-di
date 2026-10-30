@@ -1,15 +1,15 @@
+import { Inject } from '../di/Inject';
 import { Order } from '../entities/Order';
-
 import type { IEmailGateway } from '../interfaces/gateways/IEmailGateway';
 import type { IQueueGateway } from '../interfaces/gateways/IQueueGateway';
 import type { IOrdersRepository } from '../interfaces/repositories/IOrdersRepository';
 
 export class PlaceOrder {
   constructor(
-    private readonly dynamoOrdersRepository: IOrdersRepository,
-    private readonly queuGateway: IQueueGateway,
-    private readonly emailGateway: IEmailGateway,
-  ) {}
+    @Inject('OrdersRepository') private readonly dynamoOrdersRepository: IOrdersRepository,
+    @Inject('QueueGateway') private readonly queuGateway: IQueueGateway,
+    @Inject('EmailGateway') private readonly emailGateway: IEmailGateway,
+  ) { }
   async execute() {
     const customerEmail = 'tobias.vida@live.com';
     const amount = Math.ceil(Math.random() * 1000);
